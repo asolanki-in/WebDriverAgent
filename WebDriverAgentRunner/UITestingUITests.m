@@ -14,6 +14,7 @@
 #import <WebDriverAgentLib/FBFailureProofTestCase.h>
 #import <WebDriverAgentLib/FBWebServer.h>
 #import <WebDriverAgentLib/XCTestCase.h>
+#import <WebDriverAgentLib/SocketControl.h>
 
 @interface UITestingUITests : FBFailureProofTestCase <FBWebServerDelegate>
 @end
@@ -44,9 +45,12 @@
  */
 - (void)testRunner
 {
-  FBWebServer *webServer = [[FBWebServer alloc] init];
-  webServer.delegate = self;
-  [webServer startServing];
+//  FBWebServer *webServer = [[FBWebServer alloc] init];
+//  webServer.delegate = self;
+//  [webServer startServing];
+
+  SocketControl *server = [[SocketControl alloc] initSocketControl];
+  [server startServer];
 }
 
 #pragma mark - FBWebServerDelegate
