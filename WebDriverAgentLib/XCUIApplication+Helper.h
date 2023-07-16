@@ -1,17 +1,16 @@
 //
-//  FBApplication+Helper.h
+//  XCUIApplication+Helper.h
 //  WebDriverAgentLib
 //
-//  Created by Anil Solanki on 07/07/23.
+//  Created by Anil Solanki on 09/07/23.
 //  Copyright © 2023 Facebook. All rights reserved.
 //
 
-#import <WebDriverAgentLib/WebDriverAgentLib.h>
+#import <XCTest/XCTest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface FBApplication (Helper)
-
+@interface XCUIApplication (Helper)
 -(void) openDeck;
 
 @end

@@ -13,7 +13,7 @@
 #import "XCUIDevice+FBHelpers.h"
 #import "FBKeyboard.h"
 #import "FBApplication.h"
-#import "FBApplication+Helper.h"
+#import "XCUIApplication+Helper.h"
 
 @interface SocketControl() <GCDAsyncSocketDelegate>
 {
@@ -24,6 +24,7 @@
 @property (readonly, nonatomic) dispatch_queue_t socketQueue;
 @property (readonly, nonatomic) GCDAsyncSocket *socketServer;
 @property (atomic, strong) GCDAsyncSocket *socketClient;
+@property(atomic, strong) XCUIApplication *app;
 
 @end
 
@@ -34,7 +35,8 @@
   if ((self = [super init])) {
     _socketQueue = dispatch_queue_create("socketQueue", NULL);
     _socketServer = [[GCDAsyncSocket alloc] initWithDelegate:self delegateQueue:_socketQueue];
-    handledCommand = @[@"tap",@"swipe",@"home",@"key",@"home_hold", @"tap_hold"];
+    handledCommand = @[@"tap",@"swipe",@"home",@"key",@"home_hold", @"tap_hold", @"open_app"];
+    _app = [[XCUIApplication alloc] initPrivateWithPath:nil bundleID:@"com.apple.springboard"];
   }
   return self;
 }
@@ -84,12 +86,26 @@
       [XCUIDevice.sharedDevice cmd_tap:x y:y];
       break;
     }
+//    case 1:{
+//      CGFloat x1 = [[json objectForKey:@"x1"] floatValue];
+//      CGFloat y1 = [[json objectForKey:@"y1"] floatValue];
+//      CGFloat x2 = [[json objectForKey:@"x2"] floatValue];
+//      CGFloat y2 = [[json objectForKey:@"y2"] floatValue];
+//      NSString *dir = [[json objectForKey:@"dir"] stringValue];
+//      if ([dir isEqualToString:@"left"] || [dir isEqualToString:@"right"]) {
+//        [XCUIDevice.sharedDevice cmd_swipe:x1 y1:y1 x2:x2 y2:y2 delay:0.1];
+//      } else {
+//        [XCUIDevice.sharedDevice cmd_swipe:x1 y1:y1 x2:x2 y2:y2 delay:0.8];
+//      }
+//      break;
+//    }
     case 1:{
       CGFloat x1 = [[json objectForKey:@"x1"] floatValue];
       CGFloat y1 = [[json objectForKey:@"y1"] floatValue];
       CGFloat x2 = [[json objectForKey:@"x2"] floatValue];
       CGFloat y2 = [[json objectForKey:@"y2"] floatValue];
-      [XCUIDevice.sharedDevice cmd_swipe:x1 y1:y1 x2:x2 y2:y2 delay:0.05];
+      CGFloat sen = [[json objectForKey:@"sen"] floatValue];
+      [XCUIDevice.sharedDevice cmd_swipe:x1 y1:y1 x2:x2 y2:y2 delay:sen];
       break;
     }
     case 2:{
@@ -103,7 +119,6 @@
       break;
     }
     case 4:{
-      FBApplication *_app = [[FBApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"];
       if( [_app state] < 2 ) {
         [_app launch];
       } else {
@@ -117,6 +132,16 @@
       CGFloat y = [[json objectForKey:@"y"] floatValue];
       CGFloat p = [[json objectForKey:@"p"] floatValue];
       [XCUIDevice.sharedDevice cmd_tapFirm:x y:y pressure:p];
+      break;
+    }
+    case 6: {
+      NSString *bundleId = [[json objectForKey:@"bundleId"] stringValue];
+      FBApplication *localApp = [[FBApplication alloc] initWithBundleIdentifier:bundleId];
+      if ([localApp state] < 2) {
+        [localApp launch];
+      } else {
+        [localApp activate];
+      }
       break;
     }
     default:
